@@ -1256,3 +1256,682 @@ This is the version from the branch you're merging.
 > **Advanced Git commands extend basic version control with branching for parallel development, remote management for collaboration, and tools like reset, revert, fetch, and stash for controlling exactly what enters your history and when.**
 
 ---
+
+# My Doubts 
+
+> **📅 Written:** 10 Jul 2026
+
+---
+
+# 1. How does `git diff` work?
+
+## Definition
+
+`git diff` shows the **difference between two versions of your files**.
+
+Most commonly:
+
+> It shows changes that are made but **not yet staged**.
+
+---
+
+### Example
+
+Suppose your `git.md` file contains:
+
+```
+Git is a version control system.
+```
+
+You edit it:
+
+```
+Git is a distributed version control system.
+```
+
+Now run:
+
+```
+git diff
+```
+
+Output:
+
+```diff
+- Git is a version control system.
++ Git is a distributed version control system.
+```
+
+Meaning:
+
+* `-` → old version (before your change)
+* `+` → new version (your current change)
+
+---
+
+### What about after `git add`?
+
+Now:
+
+```
+git add git.md
+```
+
+Run:
+
+```
+git diff
+```
+
+Nothing appears.
+
+Why?
+
+Because the change moved:
+
+```
+Working Directory → Staging Area
+```
+
+`git diff` only checks:
+
+```
+Working Directory vs Staging Area
+```
+
+---
+
+To see staged changes:
+
+```
+git diff --staged
+```
+
+This compares:
+
+```
+Staging Area vs Last Commit
+```
+---
+
+Good catch. 👏 You are right to question that. My wording there was slightly confusing.
+
+Let's correct it properly.
+
+`git diff` and `git diff --staged` compare **different areas**.
+
+Think of Git having three important snapshots:
+
+```text
+Working Directory
+        |
+        | git add
+        ↓
+Staging Area
+        |
+        | git commit
+        ↓
+Last Commit (Repository)
+```
+
+---
+
+## 1. `git diff`
+
+### Checks:
+
+```
+Working Directory  VS  Staging Area
+```
+
+Meaning:
+
+> "What changes have I made but NOT added yet?"
+
+Example:
+
+Your last commit:
+
+```
+Git is a version control system.
+```
+
+You edit your file:
+
+```
+Git is a distributed version control system.
+```
+
+Now:
+
+```
+git diff
+```
+
+Shows:
+
+```diff
+- Git is a version control system.
++ Git is a distributed version control system.
+```
+
+Because:
+
+```
+Working Directory:
+Git is a distributed version control system.
+
+Staging Area:
+Git is a version control system.
+```
+
+There is a difference.
+
+---
+
+## 2. `git diff --staged`
+
+### Checks:
+
+```
+Staging Area  VS  Last Commit
+```
+
+Meaning:
+
+> "What changes have I already added and are ready for commit?"
+
+Example:
+
+You run:
+
+```
+git add git.md
+```
+
+Now:
+
+```
+Working Directory:
+Git is a distributed version control system.
+
+Staging Area:
+Git is a distributed version control system.
+
+Last Commit:
+Git is a version control system.
+```
+
+Now:
+
+```
+git diff
+```
+
+shows nothing.
+
+Why?
+
+Because:
+
+```
+Working Directory = Staging Area
+```
+
+No difference.
+
+But:
+
+```
+git diff --staged
+```
+
+shows:
+
+```diff
+- Git is a version control system.
++ Git is a distributed version control system.
+```
+
+Because:
+
+```
+Staging Area ≠ Last Commit
+```
+
+---
+
+So the correct table is:
+
+| Command             | Compares                         |
+| ------------------- | -------------------------------- |
+| `git diff`          | Working Directory ↔ Staging Area |
+| `git diff --staged` | Staging Area ↔ Last Commit       |
+
+---
+
+> "git diff checks changes within working area"
+
+That is not precise.
+
+A better way to remember:
+
+* **`git diff` → "What did I change but not add?"**
+* **`git diff --staged` → "What did I add but not commit?"**
+
+---
+
+# 2. How does `git remote` work?
+
+## Definition
+
+A **remote** is a connection between your local repository and another repository (usually GitHub).
+
+Basically:
+
+> "Hey Git, remember where my GitHub repository is."
+
+---
+
+Example:
+
+You have:
+
+```
+My_Notes/
+|
+|-- git.md
+|-- .git/
+```
+
+Initially:
+
+```
+git remote -v
+```
+
+Output:
+
+```
+(no output)
+```
+
+Because Git doesn't know about GitHub yet.
+
+---
+
+You connect GitHub:
+
+```
+git remote add origin https://github.com/Sitara-techgeek/Notes.git
+```
+
+Now:
+
+```
+git remote -v
+```
+
+Output:
+
+```
+origin  https://github.com/Sitara-techgeek/Notes.git (fetch)
+origin  https://github.com/Sitara-techgeek/Notes.git (push)
+```
+
+---
+
+What is `origin`?
+
+`origin` is just a nickname.
+
+Instead of writing:
+
+```
+git push https://github.com/Sitara-techgeek/Notes.git
+```
+
+every time, you write:
+
+```
+git push origin main
+```
+
+---
+
+You can have multiple remotes:
+
+Example:
+
+```
+origin → Your GitHub repository
+
+upstream → Original project repository
+```
+
+Common in open-source projects.
+
+---
+
+# 3. Where does `git fetch` download commits?
+
+Excellent question.
+
+Many beginners misunderstand this.
+
+`git fetch` downloads commits into your **local repository**, specifically into **remote-tracking branches**.
+
+It does NOT modify your current files.
+
+---
+
+Example:
+
+Your local:
+
+```
+main
+ |
+ A---B
+```
+
+GitHub:
+
+```
+origin/main
+ |
+ A---B---C
+```
+
+Someone pushed commit C.
+
+You run:
+
+```
+git fetch origin
+```
+
+Now:
+
+```
+main
+ |
+ A---B
+
+
+origin/main
+ |
+ A---B---C
+```
+
+Your files are still at B.
+
+Git only updated its knowledge of GitHub.
+
+---
+
+Where can you see it?
+
+Run:
+
+```
+git branch -r
+```
+
+Output:
+
+```
+origin/main
+```
+
+You can inspect the fetched commits:
+
+```
+git log origin/main
+```
+
+You can compare:
+
+```
+git diff main origin/main
+```
+
+Meaning:
+
+"Show me what GitHub has that I don't."
+
+---
+
+To actually bring those changes into your branch:
+
+```
+git merge origin/main
+```
+
+or simply:
+
+```
+git pull
+```
+
+(`git pull` = fetch + merge)
+
+---
+
+# 4. Example workflow for `git stash`
+
+## Definition
+
+`git stash` temporarily saves your unfinished changes and gives you a clean working directory.
+
+---
+
+### Situation
+
+You are working:
+
+```
+feature-login branch
+```
+
+You changed:
+
+```
+login.java
+```
+
+but you haven't finished.
+
+Suddenly:
+
+> "I need to quickly fix something on main."
+
+Normally:
+
+```
+git checkout main
+```
+
+Git complains:
+
+```
+Your local changes would be overwritten
+```
+
+---
+
+Solution:
+
+```
+git stash
+```
+
+Your changes disappear temporarily.
+
+Now:
+
+```
+Working Directory:
+clean
+```
+
+You switch branches:
+
+```
+git switch main
+```
+
+Fix the bug.
+
+Come back:
+
+```
+git switch feature-login
+```
+
+Bring your changes back:
+
+```
+git stash pop
+```
+
+Your unfinished work returns.
+
+---
+
+Flow:
+
+```
+Changes
+   |
+git stash
+   ↓
+Temporary storage
+   |
+git stash pop
+   ↓
+Changes restored
+```
+
+---
+
+# 5. Merge Conflict Example
+
+A merge conflict happens when Git cannot automatically decide which change to keep.
+
+---
+
+Example:
+
+Both developers edit the same line.
+
+Original file:
+
+```
+System.out.println("Hello");
+```
+
+---
+
+Developer A changes:
+
+```
+System.out.println("Hello Sravani");
+```
+
+Developer B changes:
+
+```
+System.out.println("Hello World");
+```
+
+Both commit.
+
+Now:
+
+```
+main
+
+A: Hello Sravani
+
+
+feature
+
+B: Hello World
+```
+
+Developer B merges:
+
+```
+git merge main
+```
+
+Git says:
+
+```
+CONFLICT (content): Merge conflict
+```
+
+---
+
+Git marks the file:
+
+```
+<<<<<<< HEAD
+System.out.println("Hello World");
+=======
+System.out.println("Hello Sravani");
+>>>>>>> main
+```
+
+Meaning:
+
+```
+<<<<<<<
+Your current branch version
+
+=======
+
+Other branch version
+
+>>>>>>>
+```
+
+---
+
+You manually decide:
+
+```
+System.out.println("Hello Sravani");
+```
+
+Remove the markers.
+
+Then:
+
+```
+git add file.java
+```
+
+Commit:
+
+```
+git commit -m "Resolve merge conflict"
+```
+
+Done.
+
+---
+
+# Quick Interview Summary
+
+| Command        | Purpose                                               |
+| -------------- | ----------------------------------------------------- |
+| `git diff`     | Shows file differences                                |
+| `git remote`   | Manages connections to remote repositories            |
+| `git fetch`    | Downloads remote commits without merging              |
+| `git stash`    | Temporarily stores unfinished changes                 |
+| Merge conflict | Happens when Git cannot automatically combine changes |
+
+---
+

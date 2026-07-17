@@ -1,0 +1,81 @@
+<!DOCTYPE html> 
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>My First Webpage</title>
+        <meta name = "Description" content = "My first html practice page">
+        <meta name = "viewport" content = "width=device-width, initial-scale=1.0"> 
+        <!-- Does space before and after "=" matter ... For space outside the attribute (here "=") it's fine either wat but iniside attributes ( here "content") spaces inside content can matter, because content is a string value that the browser interprets according to the viewport specification. { so width = device-width might not work according to the browser} -->
+        <!-- name as in name of meta attribute and content as in it's value --> 
+        <!-- So basically head is for SEO {Search Engine Optimization} It contains title , charset {The language set we are using in the page} ,
+        description {so that SEO understands what the page is actually about }, view port controls how a web page is displayed on different devices ... -->
+
+        <style>
+            body {
+                background-color: rgb(128, 72, 144);
+                color: white;
+            }
+            h1{
+                text-align: center;
+            }
+
+        </style>
+        <!-- A bit of CSS to protect one's eyes -->
+
+    </head>
+    <body>
+        <h1>Practice Page</h1>
+        <! One by one we will experiment all the tags explained int the html.md document > 
+        <a href="https://github.com/Sitara-techgeek">Github</a>
+        <h2>Content Table</h2>
+        <nav>
+            <ol type="i">
+            <li> <a href="#texttags">Text tags</a></li>
+            <li> <a href="#table"> Table</a></li>
+            <li> <a href="#Hi"> Form and Input Tags</a></li>
+        </ol>
+
+        </nav>
+        <h2 id="texttags">Text tags</h2>
+        <ul>
+            <li><p> So in text tags we have headings ranging from &lt;h1&gt; to &lt;h6&gt;</li> 
+            <li><span  style="color: blue;">This sentences is inside &lt;span&gt;</span> It is to apply or group a small part of text to style it later in CSS or in HTML itself</li> <br>  
+            <li>Also the difference btw &lt;b&gt; and &lt;strong&gt; is the later one implies important to <b>SEO</b> where as the former is to just look <b>bold</b></li> <br> 
+            <li>The same with <i>&lt;i&gt;</i> and <em>&lt;em&gt;</em></li><hr>
+        </ul>
+
+        <h2 id="#table">Table</h2>
+        <table border="5">
+            <tr>
+                <th>Number names</th>
+                <th>Roman number</th>
+            </tr>
+            <tr>
+                <td>One</td>
+                <td>I</td>
+            </tr>
+            <tr>
+                <td>Two</td>
+                <td>II</td>
+            </tr>
+            <tr>
+                <td>Three</td>
+                <td>III</td>
+            </tr>
+            <tr>
+                <td>Four</td>
+                <td>IV</td>
+            </tr>
+            <tr>
+                <td>Five</td>
+                <td>V</td>
+            </tr>
+        </table>
+        <h2 id="#Hi">Form and Input Tags</h2>
+        <form>
+            <label for="name">Name:</label>
+            <input type="text" id="name" placeholder="Enter your name">
+        </form>
+        
+    </body>
+</html>
